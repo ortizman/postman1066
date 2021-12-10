@@ -8,7 +8,7 @@ import {
   TreeViewDragAnalyzer,
 } from '@progress/kendo-react-treeview';
 
-import { getCollection } from "./postman";
+import getCollection from "./postman";
 
 function getSiblings(itemIndex, data) {
   let result = data;
