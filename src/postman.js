@@ -1,4 +1,4 @@
-const useMock = process.env.REACT_APP_USE_MOCK || true;
+const useMock = process.env.REACT_APP_USE_MOCK || false;
 const backURL = process.env.REACT_APP_BACK_URL || 'https://post1066.herokuapp.com';
 
 export default async function getCollection(collectionUrl) {
