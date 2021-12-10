@@ -33,7 +33,7 @@ function getTextByIndex(itemIndex, data) {
 }
 
 function transform(collection) {
-  return map(collection.collection.item);
+  return map(collection?.collection?.item);
 }
 
 function map(tree) {
@@ -52,6 +52,7 @@ const App = () => {
   const dragOverCnt = React.useRef(0);
   const isDragDrop = React.useRef(false);
   const [loading, setLoading] = React.useState(false)
+  const [serviceError, setServiceError] = React.useState(false)
   const [tree, setTree] = React.useState([]);
   const [expand, setExpand] = React.useState({
     ids: [],
@@ -80,16 +81,19 @@ const App = () => {
 
     setTree(tree);
     cleanSelection();
-    
+
   }
 
   function getCollectionWithUrl(event) {
-    console.log("get");
     setLoading(true)
-    getCollection(collectionUrl).then((resp) => {
-      setCollection(resp);
-      setTree(transform(resp))
-    }).finally(() => setLoading(false))
+    getCollection(collectionUrl)
+      .then((resp) => {
+        setServiceError(false);
+        setCollection(resp);
+        setTree(transform(resp))
+      })
+      .catch((err) => setServiceError(true))
+      .finally(() => setLoading(false))
   }
 
   function eject(tree) {
@@ -110,7 +114,7 @@ const App = () => {
   const download = async (cloneCollection) => {
     const fileName = collection.collection.info.name;
     const json = JSON.stringify(cloneCollection);
-    const blob = new Blob([json],{type:'application/json'});
+    const blob = new Blob([json], { type: 'application/json' });
     const href = await URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = href;
@@ -150,7 +154,7 @@ const App = () => {
   };
 
   const onItemDragOver = (event) => {
-    let label = selected.ids.slice(0,10).join(',');
+    let label = selected.ids.slice(0, 10).join(',');
     if (selected.ids.length > 10) {
       label += ' ...'
     }
@@ -256,7 +260,7 @@ const App = () => {
       hierarchicalsIds = [event.itemHierarchicalIndex];
     }
 
-    setSelected({ids});
+    setSelected({ ids });
     setHierarchicalsSelected(hierarchicalsIds || []);
   };
 
@@ -273,8 +277,8 @@ const App = () => {
   return (
     <div style={{ margin: '2em' }}>
       <div>
-        <div style={{marginBottom: '15px'}}>
-          Enter collection public link: <input value={collectionUrl} onInput={e => setCollectionUrl(e.target.value)} type="text" name="collectionUrl" size="50" />
+        <div style={{ marginBottom: '15px' }}>
+          Enter collection public link: <input value={collectionUrl} onInput={e => setCollectionUrl(e.target.value)} type="url" required name="collectionUrl" size="50" />
           <button disabled={loading} onClick={getCollectionWithUrl} style={{ marginRight: 10, marginLeft: 5 }}>
             get
           </button>
@@ -282,7 +286,10 @@ const App = () => {
         {loading &&
           <h4> <i style={{ color: 'red' }}>Loading...</i></h4>
         }
-        {(!loading && collection.collection !== undefined) &&
+        {(!loading && serviceError) && 
+          <h4> <i style={{ color: 'red' }}>Error fetching collection public link. Please, check url</i></h4>
+        }
+        {(!loading && collection?.collection !== undefined) &&
           <div>
             <div>
               <h4>{collection.collection?.info.name}</h4>
