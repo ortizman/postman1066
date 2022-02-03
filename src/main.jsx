@@ -275,7 +275,7 @@ const App = () => {
   };
 
   return (
-    <div style={{ margin: '2em' }}>
+    <div style={{ margin: '2em' }}>                   
       <div>
         <div style={{ marginBottom: '15px' }}>
           Enter collection public link: <input value={collectionUrl} onInput={e => setCollectionUrl(e.target.value)} type="url" required name="collectionUrl" size="50" />
